@@ -9,14 +9,18 @@ import Supabase
 import Foundation
 
 final class SupabaseService {
+    // MARK: - Properties
     let supabase = SupabaseClient(
-        supabaseURL: URL(string: "https://oynikmrnlspnjckpegja.supabase.co")!,
-        supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95bmlrbXJubHNwbmpja3BlZ2phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyODMwMTYsImV4cCI6MjA1Njg1OTAxNn0.R8SGPytMGUTOdUYXga8azCdD5fIbZTMITno-S13Nkd8"
+        supabaseURL: URL(string: Constants.Supabase.url)!,
+        supabaseKey: Constants.Supabase.apiKey
     )
+    
     static let shared = SupabaseService()
     
+    // MARK: - Init
     private init() {}
     
+    // MARK: - Functions
     func postTodoItem(_ todo: ToDoModel) async throws -> ToDoModel {
         let item: ToDoModel = try await supabase
             .from("todos")

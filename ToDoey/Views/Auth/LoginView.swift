@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var email: String = ""
-    @State private var password: String = ""
+    // MARK: - Properties
+    @State private var viewModel = LoginViewModel()
     
+    // MARK: - Body
     var body: some View {
         VStack(spacing: 20) {
             Text("Welcome to ToDoey")
@@ -18,7 +19,7 @@ struct LoginView: View {
                 .fontWeight(.bold)
                 .foregroundStyle(.third)
             
-            TextField("Email", text: $email)
+            TextField("Email", text: $viewModel.email)
                 .padding()
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
@@ -26,39 +27,42 @@ struct LoginView: View {
                 .autocapitalization(.none)
                 .padding(.horizontal)
             
-            SecureField("Password", text: $password)
+            SecureField("Password", text: $viewModel.password)
                 .padding()
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
                 .padding(.horizontal)
             
             Button {
-                login()
+                viewModel.login()
             } label: {
-                Text("Login")
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.main)
-                    .cornerRadius(10)
+                if viewModel.isLoading {
+                    ProgressView()
+                        .tint(.white)
+                } else {
+                    Text("Login")
+                        .foregroundColor(.white)
+                        .bold()
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.main)
+            .cornerRadius(10)
+            .padding(.horizontal)
+            .disabled(viewModel.isLoading)
+            
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .foregroundStyle(.red)
+                    .font(.caption)
                     .padding(.horizontal)
-                    .bold()
             }
             
             Spacer()
         }
         .padding(.top, 50)
         .background(Color(.background).ignoresSafeArea())
-    }
-    
-    func login() {
-        Task {
-            do {
-                try await AuthService.shared.signIn(email: email, password: password)
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
     }
 }
 

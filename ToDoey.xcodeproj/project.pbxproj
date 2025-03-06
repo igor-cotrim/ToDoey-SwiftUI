@@ -39,16 +39,6 @@
 			path = ToDoey;
 			sourceTree = "<group>";
 		};
-		816133E32D7A0B050058F9E9 /* ToDoeyTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ToDoeyTests;
-			sourceTree = "<group>";
-		};
-		816133ED2D7A0B050058F9E9 /* ToDoeyUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ToDoeyUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,8 +71,6 @@
 			isa = PBXGroup;
 			children = (
 				816133D22D7A0B030058F9E9 /* ToDoey */,
-				816133E32D7A0B050058F9E9 /* ToDoeyTests */,
-				816133ED2D7A0B050058F9E9 /* ToDoeyUITests */,
 				816133D12D7A0B030058F9E9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -136,9 +124,6 @@
 			dependencies = (
 				816133E22D7A0B050058F9E9 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				816133E32D7A0B050058F9E9 /* ToDoeyTests */,
-			);
 			name = ToDoeyTests;
 			packageProductDependencies = (
 			);
@@ -158,9 +143,6 @@
 			);
 			dependencies = (
 				816133EC2D7A0B050058F9E9 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				816133ED2D7A0B050058F9E9 /* ToDoeyUITests */,
 			);
 			name = ToDoeyUITests;
 			packageProductDependencies = (
