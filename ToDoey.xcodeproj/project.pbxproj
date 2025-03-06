@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		816133FF2D7A18570058F9E9 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 816133FE2D7A18570058F9E9 /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		816133E12D7A0B050058F9E9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				816133FF2D7A18570058F9E9 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = ToDoey;
 			packageProductDependencies = (
+				816133FE2D7A18570058F9E9 /* Supabase */,
 			);
 			productName = ToDoey;
 			productReference = 816133D02D7A0B030058F9E9 /* ToDoey.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 816133C72D7A0B030058F9E9;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				816133FD2D7A18570058F9E9 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 816133D12D7A0B030058F9E9 /* Products */;
 			projectDirPath = "";
@@ -558,6 +567,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		816133FD2D7A18570058F9E9 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		816133FE2D7A18570058F9E9 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 816133FD2D7A18570058F9E9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 816133C82D7A0B030058F9E9 /* Project object */;
 }
