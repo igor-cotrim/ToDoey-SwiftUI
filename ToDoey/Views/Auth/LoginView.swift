@@ -33,22 +33,27 @@ struct LoginView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
             
-            Button {
+            Button(action: {
                 viewModel.login()
-            } label: {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .tint(.white)
-                } else {
-                    Text("Login")
-                        .foregroundColor(.white)
-                        .bold()
+            }) {
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(Color.main)
+                        .cornerRadius(10)
+                        .frame(maxWidth: .infinity)
+                    
+                    // Content of the button
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Text("Login")
+                            .foregroundColor(.white)
+                            .bold()
+                    }
                 }
+                .frame(height: 50)
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.main)
-            .cornerRadius(10)
             .padding(.horizontal)
             .disabled(viewModel.isLoading)
             

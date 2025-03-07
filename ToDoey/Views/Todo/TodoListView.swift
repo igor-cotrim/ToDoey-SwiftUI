@@ -36,7 +36,7 @@ struct TodoListView: View {
                     Button {
                         viewModel.logout()
                     } label: {
-                        Text("Log out")
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
                             .foregroundStyle(.red)
                             .fontWeight(.medium)
                     }
@@ -77,7 +77,7 @@ struct TodoListView: View {
                 TodoItemView(
                     todo: todo,
                     onToggle: {
-                        withAnimation {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             viewModel.toggleTodoCompletion(for: todo)
                         }
                     }
@@ -176,16 +176,34 @@ struct TodoListView: View {
 struct TodoItemView: View {
     let todo: ToDoModel
     let onToggle: () -> Void
+    @State private var animateCheckmark: Bool = false
+    @State private var animateTag: Bool = false
     
     var body: some View {
         Button {
             onToggle()
+            
+            if !todo.isComplete {
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.6)) {
+                    animateCheckmark = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        animateTag = true
+                    }
+                }
+            } else {
+                animateCheckmark = false
+                animateTag = false
+            }
         } label: {
             HStack {
                 Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
                     .foregroundStyle(todo.isComplete ? Color("ThirdColor") : .gray)
                     .font(.system(size: 22))
                     .padding(.trailing, 5)
+                    .scaleEffect(animateCheckmark && todo.isComplete ? 1.2 : 1.0)
                 
                 Text(todo.title)
                     .font(.system(size: 17))
@@ -208,6 +226,17 @@ struct TodoItemView: View {
                             Capsule()
                                 .fill(Color("ThirdColor").opacity(0.2))
                         )
+                        .scaleEffect(animateTag ? 1.0 : 0.5)
+                        .opacity(animateTag ? 1.0 : 0.0)
+                        .transition(.scale.combined(with: .opacity))
+                        .onAppear {
+                            if todo.isComplete && !animateTag {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    animateTag = true
+                                    animateCheckmark = true
+                                }
+                            }
+                        }
                 }
             }
             .padding(.horizontal, 16)
