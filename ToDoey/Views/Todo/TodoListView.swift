@@ -12,30 +12,25 @@ struct TodoListView: View {
     @State private var viewModel = TodoListViewModel()
     @State private var showAddToDo: Bool = false
     
-    // MARK: - Init
-    init() {
-        let appearance = UINavigationBarAppearance()
-        
-        appearance.titleTextAttributes = [.foregroundColor: UIColor(named: "ThirdColor") ?? UIColor.black]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(named: "ThirdColor") ?? UIColor.black]
-        
-        UINavigationBar.appearance().standardAppearance = appearance
-    }
-    
     // MARK: - Body
     var body: some View {
         NavigationStack {
             ZStack {
+                Color("BackgroundColor")
+                    .ignoresSafeArea()
+                
                 if viewModel.isLoading {
                     ProgressView()
                         .scaleEffect(1.5)
+                        .tint(Color("ThirdColor"))
+                } else if viewModel.todos.isEmpty {
+                    emptyStateView
                 } else {
                     todoListView
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.background))
             .navigationTitle("To Do List")
+            .foregroundStyle(Color("ThirdColor"))
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -43,6 +38,7 @@ struct TodoListView: View {
                     } label: {
                         Text("Log out")
                             .foregroundStyle(.red)
+                            .fontWeight(.medium)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -50,30 +46,13 @@ struct TodoListView: View {
                         showAddToDo = true
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(Color.third)
+                            .foregroundStyle(Color("ThirdColor"))
                             .font(.title2)
                     }
                 }
             }
-            .alert("Add Item", isPresented: $showAddToDo) {
-                VStack {
-                    TextField("Enter Item:", text: $viewModel.newToDoTitle)
-                    
-                    HStack {
-                        Button(role: .cancel) {
-                            showAddToDo = false
-                            viewModel.newToDoTitle = ""
-                        } label: {
-                            Text("Cancel")
-                        }
-                        Button {
-                            viewModel.addTodo()
-                            showAddToDo = false
-                        } label: {
-                            Text("Done")
-                        }
-                    }
-                }
+            .sheet(isPresented: $showAddToDo) {
+                addTodoView
             }
             .alert("Error", isPresented: Binding<Bool>(
                 get: { viewModel.errorMessage != nil },
@@ -93,25 +72,103 @@ struct TodoListView: View {
     
     // MARK: - Views
     private var todoListView: some View {
-        ScrollView {
-            VStack {
-                ForEach(viewModel.todos) { todo in
-                    TodoItemView(
-                        todo: todo,
-                        onToggle: {
-                            withAnimation {
-                                viewModel.toggleTodoCompletion(for: todo)
-                            }
-                        },
-                        onDelete: {
+        List {
+            ForEach(viewModel.todos) { todo in
+                TodoItemView(
+                    todo: todo,
+                    onToggle: {
+                        withAnimation {
+                            viewModel.toggleTodoCompletion(for: todo)
+                        }
+                    }
+                )
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        withAnimation {
                             viewModel.deleteTodo(todo)
                         }
-                    )
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+            }
+        }
+        .listStyle(.plain)
+        .scrollIndicators(.hidden)
+        .background(Color("BackgroundColor"))
+    }
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "checklist")
+                .font(.system(size: 60))
+                .foregroundStyle(Color("ThirdColor"))
+            
+            Text("No tasks yet")
+                .font(.title2)
+                .fontWeight(.medium)
+            
+            Text("Tap the + button to add a new task")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            Button {
+                showAddToDo = true
+            } label: {
+                Text("Add Your First Task")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .padding()
+                    .padding(.horizontal)
+                    .background(Color("ThirdColor"))
+                    .clipShape(Capsule())
+            }
+            .padding(.top)
+        }
+    }
+    
+    private var addTodoView: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                TextField("What do you want to do?", text: $viewModel.newToDoTitle)
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                
+                Button {
+                    viewModel.addTodo()
+                    showAddToDo = false
+                } label: {
+                    Text("Add Task")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(viewModel.newToDoTitle.count > 2 ? Color("ThirdColor") : Color.gray)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                }
+                .disabled(viewModel.newToDoTitle.count <= 2)
+                
+                Spacer()
+            }
+            .padding(.top)
+            .navigationTitle("New Task")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") {
+                        showAddToDo = false
+                        viewModel.newToDoTitle = ""
+                    }
                 }
             }
-            .padding()
         }
-        .scrollIndicators(.hidden)
     }
 }
 
@@ -119,7 +176,6 @@ struct TodoListView: View {
 struct TodoItemView: View {
     let todo: ToDoModel
     let onToggle: () -> Void
-    let onDelete: () -> Void
     
     var body: some View {
         Button {
@@ -127,30 +183,39 @@ struct TodoItemView: View {
         } label: {
             HStack {
                 Image(systemName: todo.isComplete ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(todo.isComplete ? Color("ThirdColor") : .gray)
+                    .font(.system(size: 22))
+                    .padding(.trailing, 5)
+                
                 Text(todo.title)
+                    .font(.system(size: 17))
                     .strikethrough(
                         todo.isComplete,
                         color: .gray
                     )
-            }
-            .foregroundStyle(.main)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .padding(.vertical, 8)
-            .background(
-                Capsule()
-                    .fill(Color("SecondaryColor"))
-            )
-        }
-        .contextMenu {
-            Button {
-                onDelete()
-            } label: {
-                HStack {
-                    Image(systemName: "trash.fill")
-                    Text("Delete")
+                    .foregroundStyle(todo.isComplete ? Color.gray : Color.primary)
+                
+                Spacer()
+                
+                if todo.isComplete {
+                    Text("Done")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color("ThirdColor"))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color("ThirdColor").opacity(0.2))
+                        )
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color("SecondaryColor"))
+            )
         }
     }
 }
